@@ -71,7 +71,7 @@ with open(source) as file:
     #applying highlight box style
     #style=" style='background-color:#434649; padding-left:3px; color:#ffaa94; padding-right:3px; border:1px; border-color:#505356; border-style:solid;'"
     style=''
-    file_contents = re.sub("\`\`([A-Za-z0-9_\.\"\!\(\) ,@]*)\`\`","<span class='highlight_box'"+style+">\\1</span>", file_contents)
+    file_contents = re.sub("\`\`([A-Za-z0-9_\-\.\"\!\(\) ,@]*)\`\`","<span class='highlight_box'"+style+">\\1</span>", file_contents)
     
     #Section titles
     sections=["Enumerations","Description","Method Descriptions","Methods","Property Descriptions","Properties","Signals"]
