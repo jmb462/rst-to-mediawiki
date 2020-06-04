@@ -11,8 +11,17 @@ source=sys.argv[1]
 with open(source) as file:
     file_contents = file.read()
     
+    #removing base type link
+    file_contents = file_contents.replace(":ref:`float<class_float>`","float")
+    file_contents = file_contents.replace(":ref:`int<class_int>`","int")
+    file_contents = file_contents.replace(":ref:`bool<class_bool>`","bool")
+    
+
     #Changing line breaks
     file_contents = re.sub("(\r\n?|\n)",'\r',file_contents)
+
+    #remove class name and title
+    file_contents = re.sub("\\r\.\. _class_[A-Za-z0-9_\.\"\!\(\) ,@]*\:\\r\\r[A-Za-z0-9_\.\"\!\(\) ,@]*\\r={2,}\\r","",file_contents)
 
     #Removing github comment
     file_contents = re.sub(":github_url: hide\r\r", "", file_contents)
@@ -50,7 +59,13 @@ with open(source) as file:
     file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)\.([A-Za-z0-9_@]*)<class_([A-Za-z0-9_\.@]*)_method_([A-Za-z0-9_\.@]*)\>`","[[\\1 GD#\\2|\\1.\\2()]]",file_contents)
     #Other class with enum global scope
     file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)<enum_@GlobalScope_([A-Za-z0-9_@]*)>`","[[@GlobalScope GD#\\2|\\1]]",file_contents)
-    #Enum is the same class
+    file_contents=re.sub(":ref:`([@][A-Za-z0-9_@\.]*)<class_@GlobalScope_constant_([A-Z_a-z0-9@]*)>`","[[@GlobalScope GD#\\2|\\1]]",file_contents)
+    
+    #Constant in the same class
+    file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)<class_([A-Za-z0-9_\.@]*)_constant_([A-Za-z0-9_\.@]*)\>`","[[\\2 GD#\\3|\\3]]",file_contents)
+
+
+    #Enum in the same class
     file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)<enum_([A-Za-z0-9_@]*)>`","[[#\\1|\\1]]",file_contents)
     file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)<enum_([A-Za-z0-9_@]*)>`","[[#\\1|\\1]]",file_contents)
     
@@ -58,7 +73,7 @@ with open(source) as file:
     file_contents=re.sub("\:ref\:`([a-z][A-Za-z0-9_\.@]*)<([A-Za-z0-9_\.@]*)\>`","[[#\\1|\\1]]",file_contents)
     
     #external links
-    file_contents = re.sub("`(.*) <(.*)>`_",'[\\2 \\1]',file_contents)
+    file_contents = re.sub("`([A-Za-z0-9@ ]*) <([A-Za-z0-9@#:/\._]*)>`_" ,'[\\2 \\1]',file_contents)
 
     #Removing some basic type links
     basic_types=["float","bool","int","bool"]
@@ -77,7 +92,7 @@ with open(source) as file:
     file_contents = re.sub("\`\`([A-Za-z0-9_\-\.\"\!\(\) ,@]*)\`\`","<span class='highlight_box'"+style+">\\1</span>", file_contents)
     
     #Section titles
-    sections=["Enumerations","Description","Method Descriptions","Methods","Property Descriptions","Properties","Signals"]
+    sections=["Enumerations","Description","Method Descriptions","Methods","Constants","Property Descriptions","Properties","Signals"]
     for section in sections:
             file_contents = file_contents.replace(section+"\r","== "+section+" ==\r")
 
@@ -103,7 +118,7 @@ with open(source) as file:
     for line in lines:
         s=re.search("^\.\.",line)
         if s:
-            sections=["property","method","constant","signal"]
+            sections=["property","method","constant","constants","signal"]
             for section in sections:
                 line=re.sub("^\.\. _.*_"+section+"_([A-Za-z_@0-9]*):","=== \\1 ===",line)
             #enum anchors
