@@ -11,6 +11,10 @@ source=sys.argv[1]
 with open(source) as file:
     file_contents = file.read()
     
+
+    #fixing syntax error in some rst file...
+    file_contents = file_contents.replace("[code]","``")
+
     #removing base type link
     file_contents = file_contents.replace(":ref:`float<class_float>`","float")
     file_contents = file_contents.replace(":ref:`int<class_int>`","int")
@@ -53,24 +57,40 @@ with open(source) as file:
     file_contents = re.sub("(\-)? \:ref\:`([A-Za-z_0-9\.]*)<class_([@a-z_A-Z0-9]*)>`",'[[\\3 GD|\\2]]',file_contents)
     """
     #Method in a class
-    file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_\.@]*)<class_([A-Z][A-Za-z0-9_\.@]*)_method_([A-Z][A-Za-z0-9_\.@]*)>`","[[\\2 GD#\\3|\\3]]",file_contents)
+    file_contents=re.sub("\:ref\:`([A-Z_][A-Za-z0-9_\.@]*)<class_([A-Z][A-Za-z0-9_\.@]*)_method_([A-Z_][A-Za-z0-9_\.@]*)>`","[[\\2 GD#\\3|\\3]]",file_contents)
    
     #Other class with method
     file_contents=re.sub("\:ref\:`([A-Z@][A-Za-z0-9_@]*)\.([A-Za-z0-9_@]*)<class_([A-Za-z0-9_\.@]*)_method_([A-Za-z0-9_\.@]*)\>`","[[\\1 GD#\\2|\\1.\\2()]]",file_contents)
+    #Other class with property
+    file_contents=re.sub("\:ref\:`([A-Z@][A-Za-z0-9_@]*)\.([A-Z/a-z0-9_@]*)<class_([A-Za-z0-9_\.@]*)_property_([A-Za-z0-9/_\.@]*)\>`","[[\\1 GD#\\2|\\1.\\2()]]",file_contents)
+    
+    #Other class with signal
+    file_contents=re.sub("\:ref\:`([A-Z@][A-Za-z0-9_@]*)\.([A-Za-z0-9_@]*)<class_([A-Za-z0-9_\.@]*)_signal_([A-Za-z0-9_\.@]*)\>`","[[\\1 GD#\\2|\\1.\\2()]]",file_contents)
+    #Other class with constant
+    file_contents=re.sub("\:ref\:`([A-Z@][A-Za-z0-9_@]*)\.([A-Za-z0-9_@]*)<class_([A-Za-z0-9_\.@]*)_constant_([A-Za-z0-9_\.@]*)\>`","[[\\1 GD#\\2|\\1.\\2()]]",file_contents)
     #Other class with enum global scope
-    file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)<enum_@GlobalScope_([A-Za-z0-9_@]*)>`","[[@GlobalScope GD#\\2|\\1]]",file_contents)
+    file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@\.]*)<enum_@GlobalScope_([A-Za-z0-9_@\.]*)>`","[[@GlobalScope GD#\\2|\\1]]",file_contents)
+
     file_contents=re.sub(":ref:`([@][A-Za-z0-9_@\.]*)<class_@GlobalScope_constant_([A-Z_a-z0-9@]*)>`","[[@GlobalScope GD#\\2|\\1]]",file_contents)
     
     #Constant in the same class
     file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)<class_([A-Za-z0-9_\.@]*)_constant_([A-Za-z0-9_\.@]*)\>`","[[\\2 GD#\\3|\\3]]",file_contents)
 
+    #property in the same class
+    file_contents=re.sub("\:ref\:`([_A-Z][A-Za-z0-9_@]*)<class_([A-Za-z0-9_\.@]*)_property_([_A-Za-z0-9_\.@]*)\>`","[[#\\1|\\1]]",file_contents)
 
     #Enum in the same class
     file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)<enum_([A-Za-z0-9_@]*)>`","[[#\\1|\\1]]",file_contents)
     file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)<enum_([A-Za-z0-9_@]*)>`","[[#\\1|\\1]]",file_contents)
     
-    file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_\.@]*)<class_([A-Za-z0-9_\.@]*)\>`","[[\\2 GD|\\1]]",file_contents)
+    file_contents=re.sub("\:ref\:`([A-Z@][A-Za-z0-9_\.@]*)<class_([A-Za-z0-9_\.@]*)\>`","[[\\2 GD|\\1]]",file_contents)
+
+    #inner class link
     file_contents=re.sub("\:ref\:`([a-z][A-Za-z0-9_\.@]*)<([A-Za-z0-9_\.@]*)\>`","[[#\\1|\\1]]",file_contents)
+    
+    #inner class link with /
+    file_contents=re.sub("\:ref\:`([a-z][A-Za-z0-9_\.@/]*)<class_[A-Za-z0-9_\.@/]*_property_([a-z][A-Za-z0-9_\.@/]*)>`","[[#\\1|\\1]]",file_contents)
+    
     
     #external links
     file_contents = re.sub("`([A-Za-z0-9@ ]*) <([A-Za-z0-9@#:/\._]*)>`_" ,'[\\2 \\1]',file_contents)
@@ -89,7 +109,7 @@ with open(source) as file:
     #applying highlight box style
     #style=" style='background-color:#434649; padding-left:3px; color:#ffaa94; padding-right:3px; border:1px; border-color:#505356; border-style:solid;'"
     style=''
-    file_contents = re.sub("\`\`([A-Za-z0-9_\-\.\"\!\(\) ,@]*)\`\`","<span class='highlight_box'"+style+">\\1</span>", file_contents)
+    file_contents = re.sub("\`\`([^`]+)``","<span class='highlight_box'"+style+">\\1</span>", file_contents)
     
     #Section titles
     sections=["Enumerations","Description","Method Descriptions","Methods","Constants","Property Descriptions","Properties","Signals"]
@@ -122,7 +142,7 @@ with open(source) as file:
             for section in sections:
                 line=re.sub("^\.\. _.*_"+section+"_([A-Za-z_@0-9]*):","=== \\1 ===",line)
             #enum anchors
-            line=re.sub("^\.\. _([A-Za-z0-9_]*)_([A-Za-z0-9_]*):","=== \\2 ===",line)
+            line=re.sub("^\.\. _([A-Za-z0-9_]*)_([A-Za-z0-9_/]*):","=== \\2 ===",line)
             line=re.sub("^\.\. _([A-Za-z0-9_]*)\:","<span id='\\1'></span>",line)
 
         #removing top comments
