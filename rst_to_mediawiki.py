@@ -29,10 +29,11 @@ with open(source) as file:
     #Sections anchors
     sections=["property","method","constant","signal"]
     for section in sections:
-        file_contents = re.sub("\:ref\:`([A-Za-z_0-9]*)<(class_[a-z_A-Z0-9]*_"+section+"_[a-z_A-Z0-9]*)>`",'[[#\\2|\\1]]',file_contents)
-
+        file_contents = re.sub("\:ref\:`([A-Za-z_0-9]*)<(class_[@a-z_A-Z0-9]*_"+section+"_[a-z_A-Z0-9]*)>`",'[[#\\2|\\1]]',file_contents)
+    #enums
+        file_contents = re.sub("\:ref\:`([A-Za-z_0-9]*)<(enum_[@a-z_A-Z0-9]*)>`",'[[#\\2|\\1]]',file_contents)
     #Links to other classes
-    file_contents = re.sub("(\-)? \:ref\:`([A-Za-z_0-9]*)<class_([a-z_A-Z0-9]*)>`",'[[\\3 GD|\\2]]',file_contents)
+    file_contents = re.sub("(\-)? \:ref\:`([A-Za-z_0-9]*)<class_([@a-z_A-Z0-9]*)>`",'[[\\3 GD|\\2]]',file_contents)
     
     #Removing some basic type links
     basic_types=["float","bool","int","bool"]
@@ -49,11 +50,12 @@ with open(source) as file:
     file_contents = re.sub("(\-){3,}|(\=){3,}\r",'', file_contents)
     
     #applying highlight box style
-    style=" style='background-color:#434649; padding-left:3px; color:#ffaa94; padding-right:3px; border:1px; border-color:#505356; border-style:solid;'"
+    #style=" style='background-color:#434649; padding-left:3px; color:#ffaa94; padding-right:3px; border:1px; border-color:#505356; border-style:solid;'"
+    style=''
     file_contents = re.sub("\`\`([A-Za-z0-9_\.\"\!\(\) ,@]*)\`\`","<span class='highlight_box'"+style+">\\1</span>", file_contents)
     
     #Section titles
-    sections=["Description","Method Descriptions","Methods","Property Descriptions","Properties","Signals"]
+    sections=["Enumerations","Description","Method Descriptions","Methods","Property Descriptions","Properties","Signals"]
     for section in sections:
             file_contents = file_contents.replace(section+"\r","== "+section+" ==\r")
 
@@ -97,5 +99,4 @@ with open(source) as file:
 
     with open(sys.argv[1]+".mw", "w") as output_file:
         output_file.write(exported)
-
 
