@@ -26,25 +26,31 @@ with open(source) as file:
     #listitems
     file_contents = re.sub("\r(\-) ",'*  ',file_contents)
 
-    #Sections anchors
-    sections=["property","method","constant","signal"]
-    for section in sections:
-        file_contents = re.sub("\:ref\:`([A-Za-z_0-9]*)<(class_[@a-z_A-Z0-9]*_"+section+"_[a-z_A-Z0-9]*)>`",'[[#\\2|\\1]]',file_contents)
-    #enums
-        file_contents = re.sub("\:ref\:`([A-Za-z_0-9]*)<(enum_[@a-z_A-Z0-9]*)>`",'[[#\\2|\\1]]',file_contents)
-    #Links to other classes
-    file_contents = re.sub("(\-)? \:ref\:`([A-Za-z_0-9]*)<class_([@a-z_A-Z0-9]*)>`",'[[\\3 GD|\\2]]',file_contents)
-    
-    #Removing some basic type links
-    basic_types=["float","bool","int","bool"]
-    for basic_type in basic_types:
-        file_contents = re.sub("\[\["+basic_type+" GD\|"+basic_type+"\]\]",basic_type,file_contents)
     
     #table
     file_contents = re.sub("\|\r\+([\-]*\+){1,}\r\|","\r|-\r|", file_contents)
     file_contents = re.sub("\|\r\+([\-]*\+){1,}","\r|}", file_contents)
     file_contents = re.sub("\+([\-]*\+){1,}\r\|",'{| class="wikitable \r|', file_contents)
     file_contents = re.sub("( ){1,}\|",'||', file_contents)
+
+    #Sections anchors
+    sections=["property","method","constant","signal"]
+    for section in sections:
+        file_contents = re.sub("\:ref\:`([A-Za-z_0-9]*)<(class_[@a-z_A-Z0-9]*_"+section+"_[a-z_A-Z0-9]*)>`",'[[#\\2|\\1]]',file_contents)
+    #enums
+    file_contents = re.sub("\:ref\:`([A-Za-z_0-9]*)<(enum_[@a-z_A-Z0-9]*)>`",'[[#\\2|\\1]]',file_contents)
+    #Links to other classes
+    file_contents = re.sub("(\-)? \:ref\:`([A-Za-z_0-9]*)<class_([@a-z_A-Z0-9]*)>`",'[[\\3 GD|\\2]]',file_contents)
+    #external links
+    file_contents = re.sub("`(.*) <(.*)>`_",'[\\2 \\1]',file_contents)
+
+    #Removing some basic type links
+    basic_types=["float","bool","int","bool"]
+    for basic_type in basic_types:
+        file_contents = re.sub("\[\["+basic_type+" GD\|"+basic_type+"\]\]",basic_type,file_contents)
+    
+    
+
 
     #removing --- and ===
     file_contents = re.sub("(\-){3,}|(\=){3,}\r",'', file_contents)
