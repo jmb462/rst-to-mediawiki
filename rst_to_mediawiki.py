@@ -71,7 +71,7 @@ with open(source) as file:
     #fixin bold problems
     file_contents = file_contents.replace("''''","'''")
     file_contents = file_contents.replace("'''[","''' [")
-    file_contents = file_contents.replace("''' '''(''' ''')'''","()'''")
+    file_contents = file_contents.replace("''' '''(''' ''')'''"," ( )'''")
     
     #hiding TOC
     file_contents="__NOTOC__\r"+file_contents
