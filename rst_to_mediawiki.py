@@ -43,13 +43,16 @@ with open(source) as file:
     #Links to other classes
     file_contents = re.sub("(\-)? \:ref\:`([A-Za-z_0-9\.]*)<class_([@a-z_A-Z0-9]*)>`",'[[\\3 GD|\\2]]',file_contents)
     """
+    #Method in a class
+    file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_\.@]*)<class_([A-Z][A-Za-z0-9_\.@]*)_method_([A-Z][A-Za-z0-9_\.@]*)>`","[[\\2 GD#\\3|\\3]]",file_contents)
+   
     #Other class with method
     file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)\.([A-Za-z0-9_@]*)<class_([A-Za-z0-9_\.@]*)_method_([A-Za-z0-9_\.@]*)\>`","[[\\1 GD#\\2|\\1.\\2()]]",file_contents)
     #Other class with enum global scope
     file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)<enum_@GlobalScope_([A-Za-z0-9_@]*)>`","[[@GlobalScope GD#\\2|\\1]]",file_contents)
     #Enum is the same class
     file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)<enum_([A-Za-z0-9_@]*)>`","[[#\\1|\\1]]",file_contents)
-    
+    file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)<enum_([A-Za-z0-9_@]*)>`","[[#\\1|\\1]]",file_contents)
     
     file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_\.@]*)<class_([A-Za-z0-9_\.@]*)\>`","[[\\2 GD|\\1]]",file_contents)
     file_contents=re.sub("\:ref\:`([a-z][A-Za-z0-9_\.@]*)<([A-Za-z0-9_\.@]*)\>`","[[#\\1|\\1]]",file_contents)
