@@ -34,13 +34,26 @@ with open(source) as file:
     file_contents = re.sub("( ){1,}\|",'||', file_contents)
 
     #Sections anchors
+    """
     sections=["property","method","constant","signal"]
     for section in sections:
         file_contents = re.sub("\:ref\:`([A-Za-z_0-9]*)<(class_[@a-z_A-Z0-9]*_"+section+"_[a-z_A-Z0-9]*)>`",'[[#\\2|\\1]]',file_contents)
     #enums
     file_contents = re.sub("\:ref\:`([A-Za-z_0-9]*)<(enum_[@a-z_A-Z0-9]*)>`",'[[#\\2|\\1]]',file_contents)
     #Links to other classes
-    file_contents = re.sub("(\-)? \:ref\:`([A-Za-z_0-9]*)<class_([@a-z_A-Z0-9]*)>`",'[[\\3 GD|\\2]]',file_contents)
+    file_contents = re.sub("(\-)? \:ref\:`([A-Za-z_0-9\.]*)<class_([@a-z_A-Z0-9]*)>`",'[[\\3 GD|\\2]]',file_contents)
+    """
+    #Other class with method
+    file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)\.([A-Za-z0-9_@]*)<class_([A-Za-z0-9_\.@]*)_method_([A-Za-z0-9_\.@]*)\>`","[[\\1 GD#\\2|\\1.\\2()]]",file_contents)
+    #Other class with enum global scope
+    file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)<enum_@GlobalScope_([A-Za-z0-9_@]*)>`","[[@GlobalScope GD#\\2|\\1]]",file_contents)
+    #Enum is the same class
+    file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_@]*)<enum_([A-Za-z0-9_@]*)>`","[[#\\1|\\1]]",file_contents)
+    
+    
+    file_contents=re.sub("\:ref\:`([A-Z][A-Za-z0-9_\.@]*)<class_([A-Za-z0-9_\.@]*)\>`","[[\\2 GD|\\1]]",file_contents)
+    file_contents=re.sub("\:ref\:`([a-z][A-Za-z0-9_\.@]*)<([A-Za-z0-9_\.@]*)\>`","[[#\\1|\\1]]",file_contents)
+    
     #external links
     file_contents = re.sub("`(.*) <(.*)>`_",'[\\2 \\1]',file_contents)
 
@@ -87,6 +100,11 @@ with open(source) as file:
     for line in lines:
         s=re.search("^\.\.",line)
         if s:
+            sections=["property","method","constant","signal"]
+            for section in sections:
+                line=re.sub("^\.\. _.*_"+section+"_([A-Za-z_@0-9]*):","=== \\1 ===",line)
+            #enum anchors
+            line=re.sub("^\.\. _([A-Za-z0-9_]*)_([A-Za-z0-9_]*):","=== \\2 ===",line)
             line=re.sub("^\.\. _([A-Za-z0-9_]*)\:","<span id='\\1'></span>",line)
 
         #removing top comments
