@@ -10,7 +10,8 @@ source=sys.argv[1]
 
 with open(source) as file:
     file_contents = file.read()
-    
+
+    class_name=file_contents.splitlines()[8]
 
     #fixing syntax error in some rst file...
     file_contents = file_contents.replace("[code]","``")
@@ -24,12 +25,18 @@ with open(source) as file:
     #Changing line breaks
     file_contents = re.sub("(\r\n?|\n)",'\r',file_contents)
 
+    #Sections titles
+    file_contents = re.sub("\r([@A-Za-z _]+)\r\-{4,}","\r== \\1 ==\r",file_contents)
+
     #remove class name and title
     file_contents = re.sub("\\r\.\. _class_[A-Za-z0-9_\.\"\!\(\) ,@]*\:\\r\\r[A-Za-z0-9_\.\"\!\(\) ,@]*\\r={2,}\\r","",file_contents)
 
     #Removing github comment
     file_contents = re.sub(":github_url: hide\r\r", "", file_contents)
 
+    #parent overide tag
+    file_contents = re.sub("\*{2}O:\*{2} ``([^`]+)``", "``\\1`` (parent override)", file_contents)
+    
     #bold
     file_contents = re.sub("\*\*([A-Za-z0-9_\.\"\!\(\) ,@]*)\*\*", "'''\\1'''", file_contents)
     
@@ -45,17 +52,7 @@ with open(source) as file:
     file_contents = re.sub("\|\r\+([\-]*\+){1,}","\r|}", file_contents)
     file_contents = re.sub("\+([\-]*\+){1,}\r\|",'{| class="wikitable \r|', file_contents)
     file_contents = re.sub("( ){1,}\|",'||', file_contents)
-
-    #Sections anchors
-    """
-    sections=["property","method","constant","signal"]
-    for section in sections:
-        file_contents = re.sub("\:ref\:`([A-Za-z_0-9]*)<(class_[@a-z_A-Z0-9]*_"+section+"_[a-z_A-Z0-9]*)>`",'[[#\\2|\\1]]',file_contents)
-    #enums
-    file_contents = re.sub("\:ref\:`([A-Za-z_0-9]*)<(enum_[@a-z_A-Z0-9]*)>`",'[[#\\2|\\1]]',file_contents)
-    #Links to other classes
-    file_contents = re.sub("(\-)? \:ref\:`([A-Za-z_0-9\.]*)<class_([@a-z_A-Z0-9]*)>`",'[[\\3 GD|\\2]]',file_contents)
-    """
+    
     #Method in a class
     file_contents=re.sub("\:ref\:`([A-Z_][A-Za-z0-9_\.@]*)<class_([A-Z][A-Za-z0-9_\.@]*)_method_([A-Z_][A-Za-z0-9_\.@]*)>`","[[\\2 GD#\\3|\\3]]",file_contents)
    
@@ -108,14 +105,16 @@ with open(source) as file:
     
     #applying highlight box style
     #style=" style='background-color:#434649; padding-left:3px; color:#ffaa94; padding-right:3px; border:1px; border-color:#505356; border-style:solid;'"
-    style=''
-    file_contents = re.sub("\`\`([^`]+)``","<span class='highlight_box'"+style+">\\1</span>", file_contents)
-    
-    #Section titles
-    sections=["Enumerations","Description","Method Descriptions","Methods","Constants","Property Descriptions","Properties","Signals"]
-    for section in sections:
-            file_contents = file_contents.replace(section+"\r","== "+section+" ==\r")
+    #style=''
+    #file_contents = re.sub("\`\`([^`]+)``","<span class='highlight_box'"+style+">\\1</span>", file_contents)
+    file_contents = re.sub("\`\`([^`]+)``","{{Span|\\1}}", file_contents)
 
+    #Section titles
+    #sections=["Enumerations","Description","Method Descriptions","Tutorials","Methods","Constants","Theme Properties","Property Descriptions","Properties","Signals"]
+    #for section in sections:
+    #        file_contents = file_contents.replace(section+"\r","== "+section+" ==\r")
+    
+    
     #adding missing space before links
     file_contents = re.sub("([a-z])\[\[","\\1 [[",file_contents)
 
@@ -159,6 +158,6 @@ with open(source) as file:
     #removing some linebreaks when more than 2
     exported=re.sub("\r{3,}","\r\r",exported)
 
-    with open(sys.argv[1]+".mw", "w") as output_file:
+    with open("class_"+class_name+"_GD.mw", "w") as output_file:
         output_file.write(exported)
 
